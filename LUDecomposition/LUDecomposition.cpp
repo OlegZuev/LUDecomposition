@@ -45,6 +45,7 @@ int main() {
 
 		for (int j = 0; j < n; ++j) {
 			swap(matrix_U[i][j], matrix_U[k][j]);
+			swap(matrix_A[i][j], matrix_A[k][j]);
 		}
 
 		double multiplier = matrix_U[i][i];
@@ -58,8 +59,19 @@ int main() {
 				matrix_U[b][j] = matrix_U[b][j] - multiplier * matrix_U[i][j];
 			}
 		}
-
+		
 		print_matrix(matrix_U, n, cout);
+
+		for (int j = 0; j <= i; ++j) {
+			double vector_mult_result = 0;
+			for (int k = 0; k < i; ++k) {
+				vector_mult_result += matrix_L[i][k] * matrix_U[k][j];
+			}
+
+			matrix_L[i][j] = matrix_A[i][j] - vector_mult_result;
+		}
+
+		print_matrix(matrix_L, n, cout);
 	}
 
 	delete_matrix(matrix_A, n);
@@ -70,7 +82,7 @@ int main() {
 void allocate_matrix(double**& matrix, int& n) {
 	matrix = new double* [n];
 	for (int i = 0; i < n; ++i) {
-		matrix[i] = new double[n];
+		matrix[i] = new double[n] {0};
 	}
 }
 void delete_matrix(double** matrix, int& n) {
@@ -88,7 +100,7 @@ void copy_matrix(double** matrix_to, double** matrix_from, int n) {
 	}
 }
 
-void print_matrix(double** matrix, int n, ostream& ostr){
+void print_matrix(double** matrix, int n, ostream& ostr) {
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
 			ostr << matrix[i][j] << " ";
