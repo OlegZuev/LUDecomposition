@@ -107,6 +107,5 @@ void print_matrix(double** matrix, int n, ostream& ostr) {
 		}
 		ostr << endl;
 	}
-
 	ostr << endl;
 }
