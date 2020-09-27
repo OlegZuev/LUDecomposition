@@ -16,14 +16,15 @@ int main() {
 	double** matrix_inverseA = nullptr;
 	double** matrix_U = nullptr;
 	double** matrix_L = nullptr;
-	string variant = "8b";
+
+	string variant = "input"; // input file have name like 'variant.txt'. Output file have name like 'variant_output.txt'
 
 	int n;
 	ifstream fin("../" + variant + ".txt");
 	ofstream fout("../" + variant + "_output" + ".txt");
 	fin >> n;
 
-	ostream& out = fout;
+	ostream& out = cout;
 
 	int* indexes = new int[n];
 	for (int i = 0; i < n; ++i) {
@@ -50,7 +51,7 @@ int main() {
 	copy_matrix(matrix_U, matrix_A, n);
 	copy_matrix(matrix_PA, matrix_A, n);
 
-	out << fixed << setprecision(7) << "Variant=" << variant << endl;
+	out << fixed << setprecision(PRECISION) << "Variant=" << variant << endl;
 	out << "x:" << endl;
 	print_array(true_x, n, out);
 	out << "A:" << endl;
@@ -67,7 +68,7 @@ int main() {
 	find_LU(matrix_PA, matrix_U, matrix_L, indexes, n, out, permutation_count);
 
 	for (int i = 0; i < n; i++) {
-		out << indexes[i] + 1 << " ";
+		out << (indexes[i] + 1) << " ";
 	}
 	out << endl;
 
@@ -100,6 +101,7 @@ int main() {
 	tmp = multiply_matrix(matrix_A, matrix_inverseA, n);
 	print_matrix(tmp, n, out << scientific << setprecision(PRECISION * 2));
 	out << fixed << setprecision(PRECISION);
+	delete_matrix(tmp, n);
 
 	out << "The condition number of the matrix A=" << endl;
 	out << "Cond-1: " << find_n1(matrix_A, n) * find_n1(matrix_inverseA, n) << endl;
@@ -129,13 +131,12 @@ int main() {
 	}
 	out << endl;
 
-	delete_matrix(tmp, n);
+	delete_matrix(error, n);
+	delete_matrix(matrix_A, n);
 	delete_matrix(matrix_PA, n);
 	delete_matrix(matrix_inverseA, n);
-	delete_matrix(matrix_A, n);
 	delete_matrix(matrix_U, n);
 	delete_matrix(matrix_L, n);
-	delete_matrix(error, n);
 	delete[] indexes;
 	delete[] b;
 	fout.close();
@@ -214,7 +215,7 @@ void find_LU(double** matrix_PA, double** matrix_U, double** matrix_L, int* inde
 		double column_max = matrix_U[i][i];
 		int k = i;
 		for (int j = 0; j < n; ++j) {
-			if (abs(column_max) < abs(matrix_U[j][i])) {
+			if (fabs(column_max) < fabs(matrix_U[j][i])) {
 				column_max = matrix_U[j][i];
 				k = j;
 			}
