@@ -125,10 +125,18 @@ int main() {
 		out << scientific << setprecision(PRECISION * 2) << some[i] - b[i] << " ";
 	}
 
-	out << endl << "Error: " << endl;
+	out << endl << "Absolute Error: " << endl;
 	for (int i = 0; i < n; ++i) {		
 		out << scientific << setprecision(PRECISION * 2) << true_x[i] - result_x[i] << " ";
 	}
+
+	out << endl;
+
+	out << endl << "Relative Error: " << endl;
+	for (int i = 0; i < n; ++i) {
+		out << scientific << setprecision(PRECISION * 2) << (true_x[i] - result_x[i]) / result_x[i] << " ";
+	}
+
 	out << endl;
 
 	delete_matrix(error, n);
