@@ -19,6 +19,8 @@ void find_LU(double** matrix_PA, double** matrix_U, double** matrix_L, int* inde
 
 void find_inverse_matrix(double** matrix_inverseA, double** matrix_U, double** matrix_L, int n, int* indexes);
 
+void find_x(double* b, double** matrix_U, double** matrix_L, int n, int* indexes);
+
 double find_n1(double** matrix, int n);
 
 double find_n2(double** matrix, int n);

@@ -17,7 +17,7 @@ int main() {
 	double** matrix_U = nullptr;
 	double** matrix_L = nullptr;
 
-	string variant = "5b"; // input file have name like 'variant.txt'. Output file have name like 'variant_output.txt'
+	string variant = "7b"; // input file have name like 'variant.txt'. Output file have name like 'variant_output.txt'
 
 	int n;
 	ifstream fin("../" + variant + ".txt");
@@ -32,7 +32,7 @@ int main() {
 	}
 
 	double true_x[] = { 1, 2, 3, 4 };
-	double* b = new double[4]{ 0 };
+	double* b = new double[n]{ 0 };
 
 	allocate_matrix(matrix_A, n);
 	allocate_matrix(matrix_PA, n);
@@ -87,8 +87,14 @@ int main() {
 
 	det_A *= permutation_count % 2 == 0 ? 1 : -1;
 	out << "Determinant=" << det_A << endl;
+	double* result_x = new double[n];
+	for (int i = 0; i < n; i++) {
+		result_x[i] = b[i];
+	}
+
 	out << "x:" << endl;
-	print_array(true_x, n, out);
+	find_x(result_x, matrix_U, matrix_L, n, indexes);
+	print_array(result_x, n, out);
 	out << "A:" << endl;
 	print_matrix(matrix_A, n, out);
 
@@ -107,34 +113,25 @@ int main() {
 	out << "Cond-1: " << find_n1(matrix_A, n) * find_n1(matrix_inverseA, n) << endl;
 	out << "Cond-2: " << find_n2(matrix_A, n) * find_n2(matrix_inverseA, n) << endl;
 	out << "Cond-3: " << find_n3(matrix_A, n) * find_n3(matrix_inverseA, n) << endl;
-
-	double result_x[4]{ 0 };
-
-	for (int i = 0; i < n; ++i) {
-		for (int j = 0; j < n; ++j) {
-			result_x[i] += matrix_inverseA[i][j] * b[j];
-		}
-	}
-
 	out << "A*x-b:" << endl;
-	double some[4]{ 0 };
 	for (int i = 0; i < n; ++i) {
+		double sum = 0;
 		for (int j = 0; j < n; ++j) {
-			some[i] += matrix_A[i][j] * result_x[j];
+			sum += matrix_A[i][j] * result_x[j];
 		}
-		out << scientific << setprecision(PRECISION * 2) << some[i] - b[i] << " ";
+		out << scientific << setprecision(PRECISION * 2) << sum - b[i] << " ";
 	}
 
 	out << endl << "Absolute Error: " << endl;
-	for (int i = 0; i < n; ++i) {		
-		out << scientific << setprecision(PRECISION * 2) << true_x[i] - result_x[i] << " ";
+	for (int i = 0; i < n; ++i) {
+		out << scientific << setprecision(PRECISION * 2) << fabs(true_x[i] - result_x[i]) << " ";
 	}
 
 	out << endl;
 
 	out << endl << "Relative Error: " << endl;
 	for (int i = 0; i < n; ++i) {
-		out << scientific << setprecision(PRECISION * 2) << (true_x[i] - result_x[i]) / result_x[i] << " ";
+		out << scientific << setprecision(PRECISION * 2) << fabs(true_x[i] - result_x[i]) / result_x[i] << " ";
 	}
 
 	out << endl;
@@ -146,6 +143,7 @@ int main() {
 	delete_matrix(matrix_U, n);
 	delete_matrix(matrix_L, n);
 	delete[] indexes;
+	delete[] result_x;
 	delete[] b;
 	fout.close();
 }
@@ -293,6 +291,29 @@ void find_inverse_matrix(double** matrix_inverseA, double** matrix_U, double** m
 
 			matrix_inverseA[j][i] = y[j] - sum;
 		}
+	}
+
+	delete[] y;
+}
+
+void find_x(double* b, double** matrix_U, double** matrix_L, int n, int* indexes) {
+	double* y = new double[n] {0};
+	for (int j = 0; j < n; ++j) {
+		double sum = 0;
+		for (int k = 0; k < j; ++k) {
+			sum += matrix_L[j][k] * y[k];
+		}
+
+		y[j] = (b[indexes[j]] - sum) / matrix_L[j][j];
+	}
+
+	for (int j = n - 1; j >= 0; --j) {
+		double sum = 0;
+		for (int k = j + 1; k < n; ++k) {
+			sum += matrix_U[j][k] * b[k];
+		}
+
+		b[j] = y[j] - sum;
 	}
 
 	delete[] y;
