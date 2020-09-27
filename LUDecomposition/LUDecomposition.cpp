@@ -17,14 +17,14 @@ int main() {
 	double** matrix_U = nullptr;
 	double** matrix_L = nullptr;
 
-	string variant = "input"; // input file have name like 'variant.txt'. Output file have name like 'variant_output.txt'
+	string variant = "5b"; // input file have name like 'variant.txt'. Output file have name like 'variant_output.txt'
 
 	int n;
 	ifstream fin("../" + variant + ".txt");
 	ofstream fout("../" + variant + "_output" + ".txt");
 	fin >> n;
 
-	ostream& out = cout;
+	ostream& out = fout;
 
 	int* indexes = new int[n];
 	for (int i = 0; i < n; ++i) {
@@ -214,7 +214,7 @@ void find_LU(double** matrix_PA, double** matrix_U, double** matrix_L, int* inde
 	for (int i = 0; i < n; ++i) {
 		double column_max = matrix_U[i][i];
 		int k = i;
-		for (int j = 0; j < n; ++j) {
+		for (int j = k + 1; j < n; ++j) {
 			if (fabs(column_max) < fabs(matrix_U[j][i])) {
 				column_max = matrix_U[j][i];
 				k = j;
@@ -245,7 +245,6 @@ void find_LU(double** matrix_PA, double** matrix_U, double** matrix_L, int* inde
 			}
 		}
 
-		//out << "permutation count= " << permutation_count << " m= " << k + 1 << endl;
 		out << "k= " << i + 1 << " m= " << k + 1 << endl;
 		out << "U:" << endl;
 		print_matrix(matrix_U, n, out);
@@ -406,16 +405,4 @@ double max_not_diagonal(double** matrix, int n, int& i, int& j) {
 	}
 
 	return res;
-}
-
-double** trans_matrix(double** matrix, int n) {
-	double** new_matrix = nullptr;
-	allocate_matrix(new_matrix, n);
-	for (int i = 0; i < n; ++i) {
-		for (int j = 0; j < n; ++j) {
-			new_matrix[i][j] = matrix[j][i];
-		}
-	}
-
-	return new_matrix;
 }
