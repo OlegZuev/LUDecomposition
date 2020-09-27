@@ -30,5 +30,3 @@ double find_n3(double** matrix, int n);
 double max_not_diagonal(double** matrix, int n, int& i, int& j);
 
 double** get_diagonal_matrix(double** matrix, int n);
-
-double** trans_matrix(double** matrix, int n);
